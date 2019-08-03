@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lwy.dao.CheckGroupDao">
+    <select id="selectByCondition" resultType="checkGroup" parameterType="string">
+        select * from t_checkgroup
+        <if test="value !=null and value.length>0">
+            where code like '%${value}%' or name like '%${value}%'
+        </if>
+    </select>
+
+    <insert id="add" parameterType="checkGroup" >
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+        insert into t_checkgroup
+        (code,name,helpCode,sex,remark,attention)
+        values
+        (#{code},#{name},#{helpCode},#{sex},#{remark},#{attention})
+    </insert>
+
+    <insert id="setCheckGroupAndCheckItemRelation" >
+        insert into t_checkgroup_checkitem
+        values (#{checkgroupId},#{checkitemId})
+    </insert>
+
+    <update id="edit" parameterType="checkGroup">
+        update t_checkgroup
+        set
+            code=#{code},
+            name=#{name},
+            helpCode=#{helpCode},
+            sex=#{sex},
+            remark=#{remark},
+            attention=#{attention}
+        where id=#{id}
+    </update>
+
+    <delete id="clearCheckGroupAndCheckItemRelation" parameterType="int">
+        delete from t_checkgroup_checkitem
+        where checkgroup_id=#{id}
+    </delete>
+
+    <select id="findById" parameterType="int" resultType="checkGroup">
+        select * from t_checkgroup
+        where id=#{id}
+    </select>
+
+    <select id="findCheckitemIdsById" parameterType="int" resultType="int">
+        select checkitem_id
+        from t_checkgroup_checkitem
+        where checkgroup_id=#{id}
+    </select>
+
+    <select id="findAll" resultType="checkGroup">
+        select * from t_checkgroup
+    </select>
+
+    <resultMap id="findBySetmealIdMap" type="checkGroup">
+        <id column="id" property="id"/>
+        <collection property="checkItems" column="id"
+                    ofType="checkitem" select="com.lwy.dao.CheckItemDao.findByCheckGroupId"/>
+    </resultMap>
+    <select id="findBySetmealId" resultMap="findBySetmealIdMap" parameterType="int">
+        select c.*
+        from t_checkgroup c,t_setmeal_checkgroup s
+        where s.checkgroup_id=c.id
+        and s.setmeal_id=#{id}
+    </select>
+</mapper>

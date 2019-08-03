@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lwy.dao.OrderDao">
+    <select id="findByCondition" parameterType="order" resultType="order">
+        select * from t_order
+        <where>
+            <if test="memberId !=null">
+                and member_id=#{memberId}
+            </if>
+            <if test="orderDate !=null">
+                and orderDate=#{orderDate}
+            </if>
+            <if test="orderType !=null">
+                and orderType=#{orderType}
+            </if>
+            <if test="orderStatus !=null">
+                and orderStatus=#{orderStatus}
+            </if>
+            <if test="setmealId !=null">
+                and setmeal_id=#{setmealId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="add" parameterType="order">
+      <selectKey resultType="int" order="AFTER" keyProperty="id">
+          select last_insert_id()
+      </selectKey>
+        insert into t_order
+        (member_id,orderDate,orderType,orderStatus,setmeal_id)
+        values
+        (#{memberId},#{orderDate},#{orderType},#{orderStatus},#{setmealId})
+    </insert>
+
+    <select id="findDetailById" parameterType="int" resultType="map">
+        select
+        m.name member,s.name setmeal,o.orderDate orderDate,o.orderType orderType
+        from t_member m,t_setmeal s,t_order o
+        where  o.member_id=m.id
+        and o.setmeal_id=s.id
+        and o.id=#{id}
+    </select>
+
+    <select id="getOrderNumberByDate" resultType="int" parameterType="string">
+        select count(1)
+        from t_order
+        where orderDate=#{date}
+    </select>
+    <select id="getVisitsNumberByDate" parameterType="string" resultType="int">
+        select count(1)
+        from t_order
+        where orderDate=#{date}
+        and orderStatus='已到诊'
+    </select>
+
+    <select id="getOrderNumberAfterDate" resultType="int" parameterType="string">
+         select count(1)
+        from t_order
+        where orderDate>=#{date}
+    </select>
+    <select id="getVisitsNumberAfterDate" parameterType="string" resultType="int">
+         select count(1)
+        from t_order
+        where orderDate>=#{date}
+        and orderStatus='已到诊'
+    </select>
+
+</mapper>
