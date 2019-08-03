@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lwy.dao.OrderSettingDao">
+    <select id="findByDate" parameterType="date" resultType="orderSetting">
+        select * from t_ordersetting
+        where orderDate=#{orderDate}
+    </select>
+
+    <insert id="add" parameterType="orderSetting">
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+        insert into t_ordersetting
+        (orderDate,number,reservations)
+        values
+        (#{orderDate}, #{number}, #{reservations})
+    </insert>
+
+    <update id="updateNumberByDate" parameterType="orderSetting">
+        update t_ordersetting
+        set number=#{number}
+        where orderDate=#{orderDate}
+    </update>
+
+    <select id="findOrderSettingBetweennDate" resultType="orderSetting">
+        select * from t_ordersetting
+        where orderDate between #{first} and #{end}
+    </select>
+
+    <update id="updateReservationByDate" parameterType="date" >
+        update t_ordersetting
+        set reservations=reservations+1
+        where orderDate=#{date}
+        and reservations &lt; number
+
+    </update>
+</mapper>

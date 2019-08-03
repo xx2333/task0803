@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lwy.dao.UserDao">
+   <!-- <select id="findByUsername" resultType="user" parameterType="String">
+        select * from t_user
+        where username=#{username}
+    </select>-->
+
+
+    <resultMap id="userRolePermissionMap" type="user">
+        <id column="id" property="id" />
+        <result property="birthday" column="birthday"/>
+        <result property="gender" column="gender"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="remark" column="remark"/>
+        <result property="station" column="station"/>
+        <result property="telephone" column="telephone"/>
+        <collection property="roles"  ofType="role" >
+            <id column="rid" property="id"/>
+            <result column="rname" property="name"/>
+            <collection property="permissions" ofType="permission">
+                <result property="keyword" column="pkeyword"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <select id="findByUsername" resultMap="userRolePermissionMap" parameterType="String">
+        SELECT u.*,r.id rid,r.name rname,p.keyword pkeyword
+        FROM t_user u,t_user_role ur,t_role r,t_permission p,t_role_permission rp
+        WHERE u.id=ur.`user_id` AND ur.`role_id`=r.`id`
+        AND r.id=rp.`role_id` AND rp.`permission_id`=p.id
+        AND u.username=#{username}
+    </select>
+
+    <select id="findAll" resultType="user">
+        select * from t_user
+    </select>
+
+<!--    <select id="findByCondition" parameterType="string" resultType="user">
+        select * from t_user
+        <where>
+            <if test="value !=null and value.length>0">
+                and name like #{value} or keyword like #{value}
+            </if>
+        </where>
+    </select>-->
+
+    <update id="edit" parameterType="user">
+        update t_user
+        set
+            birthday=#{birthday},
+            gender=#{gender},
+            username=#{username},
+            password=#{password},
+            remark=#{remark},
+            station=#{station},
+            telephone=#{telephone}
+        where id=#{id}
+    </update>
+
+    <delete id="deleteById" parameterType="int">
+        delete from t_user where id=#{id}
+    </delete>
+    <insert id="add" parameterType="user">
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+        insert into t_user
+        (birthday,gender,username,password,remark,station,telephone)
+        values
+        (#{birthday},#{gender},#{username},#{password},#{remark},#{station},#{telephone})
+    </insert>
+
+    <delete id="cleaRelationByUserId" parameterType="int">
+        delete from t_user_role
+        where user_id=#{id}
+    </delete>
+</mapper>
