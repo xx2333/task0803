@@ -22,18 +22,19 @@ public class SetmealServiceImpl implements SetmealService {
     private SetmealDao setmealDao;
     @Autowired
     private JedisPool jedisPool;
+
     @Transactional
     @Override
     public void add(Setmeal setmeal, List<Integer> checkgroupIds) {
         setmealDao.add(setmeal);
         Integer id = setmeal.getId();
-        if (checkgroupIds!=null&&checkgroupIds.size()>0) {
+        if (checkgroupIds != null && checkgroupIds.size() > 0) {
             for (Integer checkgroupId : checkgroupIds) {
                 setmealDao.setSetmealCheckGroupRelation(id, checkgroupId);
             }
         }
 
-        if (setmeal.getImg()!=null){
+        if (setmeal.getImg() != null) {
             jedisPool.getResource().sadd(RedisConstant.SETMEAL_PIC_DB_RESOURCES, setmeal.getImg());
         }
 
@@ -42,8 +43,8 @@ public class SetmealServiceImpl implements SetmealService {
     @Override
     public PageResult findPage(QueryPageBean queryPageBean) {
         PageHelper.startPage(queryPageBean.getCurrentPage(), queryPageBean.getPageSize());
-        Page<Setmeal> page= setmealDao.selectByCondition(queryPageBean.getQueryString());
-        return new PageResult(page.getTotal(),page.getResult());
+        Page<Setmeal> page = setmealDao.selectByCondition(queryPageBean.getQueryString());
+        return new PageResult(page.getTotal(), page.getResult());
     }
 
     @Override

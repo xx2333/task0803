@@ -14,6 +14,7 @@ import java.util.*;
 
 @Service(interfaceClass = ReportService.class)
 public class ReportServiceImpl implements ReportService {
+
     @Autowired
     private MemberDao memberDao;
     @Autowired
