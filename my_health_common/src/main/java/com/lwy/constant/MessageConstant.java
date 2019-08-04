@@ -72,4 +72,8 @@ public class MessageConstant {
     public static final String GET_PERMISSION_SUCCESS="获取权限信息成功";
     public static final String ADD_PERMISSION_SUCCESS = "新增权限成功";
     public static final String EDIT_PERMISSION_SUCCESS = "编辑权限信息成功";
+    public static final String ADD_MENU_SUCCESS = "新增菜单成功";
+    public static final String EDIT_MENU_SUCCESS = "编辑菜单信息成功";
+    public static final String DELTE_MENU_SUCCESS = "删除菜单成功";
+    public static final String GET_USERINFO_SUCCESS = "获取用户信息成功";
 }

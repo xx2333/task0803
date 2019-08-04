@@ -69,4 +69,32 @@ public class ReportServiceImpl implements ReportService {
         map.put("hotSetmeal", hotSetmeal);
         return map;
     }
+
+    @Override
+    public List<Map<String, Object>> getMemberByGender() {
+        return memberDao.getMemberByGender();
+    }
+
+    @Override
+    public List<Map<String, Object>> getMemberByAge() {
+        Calendar calendar=Calendar.getInstance();
+        List<Map<String, Object>> list = new ArrayList<>();
+        Map<String, Object> map=null;
+        int n=20;
+        Date start=null;
+        Date end=null;
+        for (int i=0;i<7;i++){
+            map = new HashMap<>();
+            start = calendar.getTime();
+            calendar.add(Calendar.YEAR,-n);
+            end=calendar.getTime();
+            int count= memberDao.getMemberByAge(start,end);
+            if (count>0) {
+                map.put("name", (i * n + "-" + (i + 1) * n + "岁"));
+                map.put("value", count);
+                list.add(map);
+            }
+        }
+        return list;
+    }
 }

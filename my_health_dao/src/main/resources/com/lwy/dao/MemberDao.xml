@@ -34,4 +34,12 @@
         select count(1) from t_member
         where regTime >=#{date}
     </select>
+
+    <select id="getMemberByGender" resultType="map">
+        select IFNULL(sex,'未选') name,count(1) value from t_member group by sex
+    </select>
+
+    <select id="getMemberByAge" resultType="int">
+        select count(1)  from t_member where birthday >#{end}and birthday &lt; #{start}
+    </select>
 </mapper>

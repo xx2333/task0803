@@ -16,7 +16,6 @@ public class Role implements Serializable {
     private Set<User> users = new HashSet<User>(0);
     private Set<Permission> permissions = new HashSet<Permission>(0);
     private LinkedHashSet<Menu> menus = new LinkedHashSet<Menu>(0);
-
     public Integer getId() {
         return id;
     }

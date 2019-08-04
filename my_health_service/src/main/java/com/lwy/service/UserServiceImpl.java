@@ -1,21 +1,26 @@
 package com.lwy.service;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.lwy.dao.PermissionDao;
 import com.lwy.dao.RoleDao;
 import com.lwy.dao.UserDao;
-import com.lwy.pojo.Permission;
-import com.lwy.pojo.Role;
+import com.lwy.entity.PageResult;
+import com.lwy.entity.QueryPageBean;
 import com.lwy.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import service.UserService;
 
 import java.util.List;
-import java.util.Set;
 
+@SuppressWarnings("all")
 @Service(interfaceClass = UserService.class)
 public class UserServiceImpl implements UserService {
+
+
     @Autowired
     private UserDao userDao;
     @Autowired
@@ -47,11 +52,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void add(User user) {
+    public void add(User user,  List<Integer> roleIds) {
         userDao.add(user);
+        setUserRoleRelation(user.getId(),roleIds);
     }
-
-
 
     @Override
     @Transactional
@@ -62,8 +66,36 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void edit(User user) {
-
+    public void edit(User user,  List<Integer> roleIds) {
+        userDao.cleaRelationByUserId(user.getId());
+        setUserRoleRelation(user.getId(),roleIds);
+        userDao.edit(user);
     }
 
+    @Override
+    public PageResult findPage(QueryPageBean queryPageBean) {
+        String queryString = queryPageBean.getQueryString();
+        if (queryString!=null) {
+            queryString = "%" + queryString + "%";
+        }
+        PageHelper.startPage(queryPageBean.getCurrentPage(), queryPageBean.getPageSize());
+        Page<User> page = userDao.findByCondition(queryString);
+        return new PageResult(page.getTotal(),page.getResult());
+    }
+
+    @Override
+    public User findById(Integer id) {
+        return userDao.findById(id);
+    }
+
+    @Override
+    public List<Integer> findRoleIdsById(Integer id) {
+        return userDao.findRoleIdsById(id);
+    }
+
+    public void setUserRoleRelation(Integer uid,List<Integer> roleIds){
+        if (roleIds!=null&&roleIds.size()>0){
+            roleIds.forEach(roleId->userDao.serUserRoleRelation(uid,roleId));
+        }
+    }
 }

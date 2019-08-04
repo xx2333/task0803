@@ -11,4 +11,8 @@ public interface ReportService {
     List<Map<String, Object>> getSetmealReport();
 
     Map<String, Object> getBusinessReportData() throws Exception;
+
+    List<Map<String, Object>> getMemberByGender();
+
+    List<Map<String, Object>> getMemberByAge();
 }

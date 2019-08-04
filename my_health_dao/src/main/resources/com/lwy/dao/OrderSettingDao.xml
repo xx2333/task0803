@@ -35,4 +35,8 @@
         and reservations &lt; number
 
     </update>
+
+    <delete id="clearHistory" parameterType="date" >
+        delete from t_ordersetting where orderDate &lt; #{date}
+    </delete>
 </mapper>

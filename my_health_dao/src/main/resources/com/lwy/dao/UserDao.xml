@@ -38,14 +38,14 @@
         select * from t_user
     </select>
 
-<!--    <select id="findByCondition" parameterType="string" resultType="user">
+    <select id="findByCondition" parameterType="string" resultType="user">
         select * from t_user
         <where>
             <if test="value !=null and value.length>0">
-                and name like #{value} or keyword like #{value}
+                and username like #{value} or telephone like #{value}
             </if>
         </where>
-    </select>-->
+    </select>
 
     <update id="edit" parameterType="user">
         update t_user
@@ -53,7 +53,9 @@
             birthday=#{birthday},
             gender=#{gender},
             username=#{username},
-            password=#{password},
+            <if test="password !=null and password.length>0">
+                password=#{password},
+            </if>
             remark=#{remark},
             station=#{station},
             telephone=#{telephone}
@@ -77,4 +79,18 @@
         delete from t_user_role
         where user_id=#{id}
     </delete>
+
+    <insert id="serUserRoleRelation" >
+        insert into t_user_role
+        values (#{uid},#{roleId})
+    </insert>
+
+    <select id="findById" resultType="user" parameterType="int">
+        select * from t_user where id=#{id}
+    </select>
+
+
+    <select id="findRoleIdsById" parameterType="int" resultType="int">
+        select role_id from t_user_role where user_id=#{id}
+    </select>
 </mapper>

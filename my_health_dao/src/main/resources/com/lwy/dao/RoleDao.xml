@@ -61,8 +61,22 @@
         where role_id=#{id}
     </delete>
 
-    <select id="findCountByRoleId" parameterType="int" resultType="int">
+    <select id="findCountByRoleId" parameterType="int" resultType="long">
         select count(1) from t_user_role
         where role_id=#{id}
+    </select>
+
+    <select id="findPermissionIdsById" parameterType="int" resultType="int">
+        select permission_id from t_role_permission
+        where role_id=#{id}
+    </select>
+
+    <select id="findMenuIdsById" resultType="int" parameterType="int">
+        select menu_id from t_role_menu
+        where role_id=#{id}
+    </select>
+
+    <select id="findById" parameterType="int" resultType="role">
+        select * from t_role where id=#{id}
     </select>
 </mapper>

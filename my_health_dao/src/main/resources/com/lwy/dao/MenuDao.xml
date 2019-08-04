@@ -36,14 +36,14 @@
         select * from t_menu
     </select>
 
-  <!--  <select id="findByCondition" parameterType="string" resultType="menu">
+    <select id="findByCondition" parameterType="string" resultType="menu">
         select * from t_menu
         <where>
             <if test="value !=null and value.length>0">
-                and name like #{value} or keyword like #{value}
+                and name like #{value} or level like #{value}
             </if>
         </where>
-    </select>-->
+    </select>
 
     <update id="edit" parameterType="menu">
         update t_menu
@@ -54,7 +54,7 @@
             priority=#{priority},
             description=#{description},
             icon=#{icon},
-            parentMenuId=#{parentMenuId},
+            parentMenuId=#{parentMenuId}
         where id=#{id}
 
     </update>
@@ -74,6 +74,10 @@
 
     <select id="findById" parameterType="int" resultType="menu">
         select * from t_menu where id=#{id}
+    </select>
+
+    <select id="findCountByMenuId" resultType="long" parameterType="int">
+        select count(1) from t_role_menu where menu_id=#{id}
     </select>
 
 </mapper>

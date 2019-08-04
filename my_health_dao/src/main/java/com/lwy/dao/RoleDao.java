@@ -1,5 +1,6 @@
 package com.lwy.dao;
 
+import com.github.pagehelper.Page;
 import com.lwy.pojo.Role;
 import org.apache.ibatis.annotations.Param;
 
@@ -9,7 +10,7 @@ import java.util.Set;
 public interface RoleDao {
     Set<Role> findByUserId(Integer id);
     List<Role> findAll();
-    List<Role> findByCondition(String queryString);
+    Page<Role> findByCondition(String queryString);
 
     void add(Role Role);
 
@@ -28,4 +29,10 @@ public interface RoleDao {
     void clearRoleMenuRelationByRoleId(Integer id);
 
     long findCountByRoleId(Integer id);
+
+    List<Integer> findPermissionIdsById(Integer id);
+
+    List<Integer> findMenuIdsById(Integer id);
+
+    Role findById(Integer id);
 }

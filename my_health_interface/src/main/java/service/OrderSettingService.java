@@ -11,4 +11,5 @@ public interface OrderSettingService {
     List<Map<String, Object>> findByMonth(String date);
 
     void editNumberByDate(OrderSetting orderSetting);
+
 }

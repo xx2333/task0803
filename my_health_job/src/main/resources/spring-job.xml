@@ -18,11 +18,23 @@
         <property name="targetObject" ref="clearImgJob"/>
         <property name="targetMethod" value="ClearImg"/>
     </bean>
+
+    <bean class="com.lwy.job.ClearOrderSettingJob" id="clearOrderSettingJob"></bean>
+    <bean id="jobDetailOder" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="clearOrderSettingJob"/>
+        <property name="targetMethod" value="clearOrderSetting"/>
+    </bean>
     <!--注册触发器-->
     <bean class="org.springframework.scheduling.quartz.CronTriggerFactoryBean" id="trigger">
-        <property name="jobDetail" ref="jobDetail"/>
+        <property name="jobDetail" ref="jobDetail"></property>
         <property name="cronExpression">
             <value>0/15 * * * *  ?</value>
+        </property>
+    </bean>
+    <bean class="org.springframework.scheduling.quartz.CronTriggerFactoryBean" id="trigger1">
+        <property name="jobDetail" ref="jobDetailOder"></property>
+        <property name="cronExpression">
+            <value>0 0 2 L * ? </value>
         </property>
     </bean>
     <!--调度器工厂-->
@@ -30,6 +42,7 @@
         <property name="triggers">
             <list>
                 <ref bean="trigger"/>
+                <ref bean="trigger1"/>
             </list>
         </property>
     </bean>

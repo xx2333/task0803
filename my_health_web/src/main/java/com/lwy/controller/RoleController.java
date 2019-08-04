@@ -2,6 +2,8 @@ package com.lwy.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.lwy.constant.MessageConstant;
+import com.lwy.entity.PageResult;
+import com.lwy.entity.QueryPageBean;
 import com.lwy.entity.Result;
 import com.lwy.pojo.Role;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,5 +42,23 @@ public class RoleController {
         List<Role> list = roleService.findAll();
         return new Result(true, MessageConstant.GET_ROLE_SUCCESS,list);
     }
+    @RequestMapping("findById")
+    public Result findById(Integer id){
+        Role role = roleService.findById(id);
+        return new Result(true,MessageConstant.GET_ROLE_SUCCESS,role);
 
+    }
+
+    @RequestMapping("/findPage")
+    public PageResult findPage(@RequestBody QueryPageBean queryPageBean) {
+        return roleService.findPage(queryPageBean);
+    }
+    @RequestMapping("/findPermissionIdsById")
+    public List<Integer> findPermissionIdsById(Integer id){
+        return roleService.findPermissionIdsById(id);
+    }
+    @RequestMapping("/findMenuIdsById")
+    public List<Integer> findMenuIdsById(Integer id){
+        return roleService.findMenuIdsById(id);
+    }
 }

@@ -1,5 +1,6 @@
 package com.lwy.dao;
 
+import com.github.pagehelper.Page;
 import com.lwy.pojo.Menu;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 public interface MenuDao {
     List<Menu> findByUsername(String username);
     List<Menu> findAll();
-    List<Menu> findByCondition(String queryString);
+    Page<Menu> findByCondition(String queryString);
 
     void add(Menu menu);
 
@@ -16,4 +17,6 @@ public interface MenuDao {
     void edit(Menu menu);
 
     Menu findById(Integer id);
+
+    long findCountByMenuId(Integer id);
 }

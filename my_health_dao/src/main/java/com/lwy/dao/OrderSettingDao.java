@@ -16,4 +16,6 @@ public interface OrderSettingDao {
     List<OrderSetting> findOrderSettingBetweennDate(@Param("first") String first, @Param("end") String end);
 
     void updateReservationByDate(Date orderDate);
+
+    void clearHistory(Date time);
 }
