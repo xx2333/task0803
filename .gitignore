@@ -3,3 +3,7 @@ target
 *.iws
 *.iml
 *.ipr
+<<<<<<< HEAD
+=======
+/pom.xml
+>>>>>>> b9ed755f7021abfdf6785653aca4057e25f62859

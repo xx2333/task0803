@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="it.healthy.dao.OrderDao">
+    <resultMap id="baseResultMap" type="it.healthy.domain.Order">
+        <id property="id" column="id"/>
+        <result column="member_id" property="member_id"/>
+        <result column="orderDate" property="orderDate" javaType="date"/>
+        <result column="orderType" property="orderType"/>
+        <result column="orderStatus" property="orderStatus"/>
+        <result column="package_id" property="package_id"/>
+    </resultMap>
+
+
+    <insert id="addOrder" parameterType="it.healthy.domain.Order">
+      <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+    SELECT LAST_INSERT_ID()
+</selectKey>
+        insert into t_order(member_id,orderDate,orderType,orderStatus,package_id)
+        values(#{member_id},#{orderDate},#{orderType},#{orderStatus},#{package_id})
+    </insert>
+
+
+    <select id="findOrder" resultType="it.healthy.domain.Order" parameterType="it.healthy.domain.Order">
+        SELECT * from t_order WHERE orderStatus=#{orderStatus}
+        and member_id=#{member_id}
+        and orderDate=#{orderDate}
+        and package_id=#{package_id}
+    </select>
+    <select id="findOrderById" resultType="it.healthy.domain.Order">
+        SELECT t_member.`name` as member,t_package.`name` as setmeal,orderDate ,orderType
+FROM t_order,t_package,t_member
+WHERE t_order.`id`=#{id} AND t_order.`package_id`=t_package.`id` AND t_order.`member_id`=t_member.`id`
+    </select>
+</mapper>
