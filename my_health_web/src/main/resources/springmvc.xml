@@ -15,7 +15,7 @@
     <dubbo:application name="my_health_web"/>
     <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
     <dubbo:annotation package="com.lwy"/>
-    <import resource="classpath:spring-redis.xml"/>
+    
     <mvc:annotation-driven  validator="validator" >
         <mvc:message-converters register-defaults="true">
             <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
