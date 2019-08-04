@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="it.healthy.dao.MemberDao">
+    <insert id="AutoAddMember" parameterType="it.healthy.domain.Member">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_member(name,sex,idCard,phoneNumber,regTime) values (#{name},#{sex},#{idCard},#{phoneNumber},#{regTime})
+    </insert>
+
+    <select id="findMemberByTel" resultType="it.healthy.domain.Member" parameterType="string">
+        select * from t_member where phoneNumber=#{value}
+    </select>
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="it.healthy.dao.OrderSettingDao">
+    <insert id="add" parameterType="it.healthy.domain.OrderSetting">
+        insert into t_ordersetting
+      		(orderDate,number,reservations)
+                      values
+      		(#{orderDate},#{number},#{reservations})
+    </insert>
+    <update id="editNumberByOrderDate" parameterType="it.healthy.domain.OrderSetting">
+         update t_ordersetting set number = #{number} where orderDate = #{orderDate}
+    </update>
+    <update id="updateOrder">
+        update t_ordersetting set reservations=reservations+1 where orderDate=#{value}
+
+    </update>
+
+    <select id="findCountByOrderDate" parameterType="java.util.Date" resultType="java.lang.Long">
+        select count(1) from t_ordersetting  where orderDate=#{value}
+    </select>
+    <select id="getOrderSettingByYearAndMonth" resultType="it.healthy.domain.OrderSetting">
+        SELECT * FROM
+          t_ordersetting
+          WHERE YEAR(orderDate) = #{year} AND MONTH(orderDate) = #{month}
+    </select>
+    <select id="findByOrderDate" parameterType="date" resultType="it.healthy.domain.OrderSetting">
+        select * from t_ordersetting where orderDate=#{value}
+    </select>
+</mapper>

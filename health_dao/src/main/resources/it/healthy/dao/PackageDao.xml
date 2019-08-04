@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="it.healthy.dao.PackageDao">
+    <resultMap id="packageAndCheckGroupResultMap" type="it.healthy.domain.Package">
+        <collection property="checkGroups" javaType="ArrayList"
+                    ofType="it.healthy.domain.CheckGroup" column="id"
+                    select="it.healthy.dao.CheckGroupDao.findCheckGroupById">
+        </collection>
+    </resultMap>
+    <insert id="addPackage" parameterType="it.healthy.domain.Package">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+         insert into t_package
+      		(code,name,sex,age,helpCode,price,remark,attention,img)
+        		values
+      		(#{code},#{name},#{sex},#{age},#{helpCode},#{price},#{remark},#{attention},#{img})
+    </insert>
+    <insert id="addCheckGroupByPackage">
+        insert into t_package_checkgroup
+      		(package_id,checkgroup_id)
+      			values
+      		(#{packageId},#{checkgroupId})
+    </insert>
+    <select id="findAll" resultType="it.healthy.domain.CheckGroup">
+        select * from t_checkgroup
+    </select>
+    <select id="findPage" parameterType="string" resultType="it.healthy.domain.Package">
+        select * from t_package
+        <if test="value != null and value.length > 0">
+            where code = #{value} or name = #{value} or helpCode = #{value}
+        </if>
+    </select>
+    <select id="getPackageById" resultMap="packageAndCheckGroupResultMap">
+        select * from t_package where id=#{value}
+    </select>
+    <select id="getPackage" resultType="it.healthy.domain.Package">
+        select * from t_package
+    </select>
+</mapper>

@@ -1,0 +1,93 @@
+package it.healthy.WebControllor;
+
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import it.healthy.Utils.QiniuUtils;
+import it.healthy.constant.MessageConstant;
+import it.healthy.constant.RedisConstant;
+import it.healthy.domain.Package;
+import it.healthy.domain.*;
+import it.healthy.service.PackageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import redis.clients.jedis.JedisPool;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/package")
+public class PackageController {
+    @Autowired
+    private JedisPool jedisPool;
+    @Reference
+    private PackageService packageService;
+
+    @PostMapping("/upload")
+    public Result upload(@RequestParam("imgFile") MultipartFile imgFile){
+        Result result =null;
+        try {
+            //获取初始文件名
+            String originalFilename = imgFile.getOriginalFilename();
+            //获取文件后缀名
+            int lastIndexOf = originalFilename.lastIndexOf(".");
+            String suffix=originalFilename.substring(lastIndexOf-1);
+            //随机生成文件名称,防止同文件被覆盖
+            String filename = UUID.randomUUID().toString() + suffix;
+
+            QiniuUtils.upload2Qiniu(imgFile.getBytes(), filename);
+            //将文件存储到redis中
+            jedisPool.getResource().sadd(RedisConstant.SETMEAL_PIC_RESOURCES, filename);
+
+            //4. 文件名返回给前端，在七牛中的domain(域名)也要一起返回给前端
+            Map<String,String> imageMap = new HashMap<String,String>();
+            imageMap.put("domain", QiniuUtils.DOMAIN);
+            imageMap.put("image", filename);
+
+            result = new Result(true, MessageConstant.PIC_UPLOAD_SUCCESS,imageMap);
+        } catch(Exception e) {
+            e.printStackTrace();
+            result = new Result(false, MessageConstant.PIC_UPLOAD_FAIL);
+        }
+        return result;
+    }
+
+
+    @RequestMapping("/findPage")
+    public Result findPage(@RequestBody QueryPageBean queryPageBean){
+        PageResult<Package> packagePageResult= packageService.findPage(queryPageBean);
+        return new Result(true,MessageConstant.QUERY_PACKAGE_SUCCESS,packagePageResult);
+    }
+
+    @RequestMapping("/getPackage")
+    public Result getPackage(){
+        List<Package> list=null;
+        try {
+           list= packageService.getPackage();
+            for (Package aPackage : list) {
+                aPackage.setImg(QiniuUtils.DOMAIN + "/" + aPackage.getImg());
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+            return new Result(false,MessageConstant.QUERY_PACKAGE_FAIL);
+        }
+        return new Result(true,MessageConstant.QUERY_PACKAGE_SUCCESS,list);
+    }
+
+    @RequestMapping("/getPackageById")
+    public Result getPackageById(Integer id){
+        Package packageById=null;
+        try {
+             packageById=packageService.getPackageById(id);
+             packageById.setImg(QiniuUtils.DOMAIN + "/" + packageById.getImg());
+        } catch(Exception e) {
+            e.printStackTrace();
+            return new Result(false,MessageConstant.QUERY_PACKAGE_FAIL,packageById);
+        }
+
+        return new Result(true,MessageConstant.QUERY_PACKAGE_SUCCESS,packageById);
+    }
+}

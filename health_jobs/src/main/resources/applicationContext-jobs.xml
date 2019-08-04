@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+    <context:component-scan base-package="it.healthy.Job"/>
+    <bean class="it.healthy.Job.JobDemo" id="jobDemo"/>
+    <!--任务策略-->
+
+    <context:annotation-config></context:annotation-config>
+    <bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!--调用的是哪个任务类-->
+        <property name="targetObject" ref="jobDemo"/>
+        <!--调用的是任务类中的哪个方法-->
+        <property name="targetMethod" value="clearImg"/>
+        <!--是否使用多线程来跑任务，false使用单线程-->
+        <property name="concurrent" value="false"/>
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.CronTriggerFactoryBean" id="cronTrigger">
+        <!--七子表达式, 触发的时机，时间的表达式，跟当前的系统时间对比，如果匹配则触发-->
+        <!--秒 分 时 日 月 周 年-->
+        <property name="cronExpression" value="0/2 * * * * ? *"/>
+        <!--绑定触发时调用任务策略-->
+        <property name="jobDetail" ref="jobDetail"/>
+    </bean>
+
+
+    <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <!-- 注入多个触发器 -->
+        <property name="triggers">
+            <list>
+                <ref bean="cronTrigger"/>
+            </list>
+        </property>
+    </bean>
+    <import resource="Spring-redis.xml"/>
+
+</beans>

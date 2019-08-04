@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans.xsd
+                            http://www.springframework.org/schema/mvc
+                            http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                            http://code.alibabatech.com/schema/dubbo
+                            http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+                            http://www.springframework.org/schema/context
+                            http://www.springframework.org/schema/context/spring-context.xsd
+                            http://www.springframework.org/schema/security
+                            http://www.springframework.org/schema/security/spring-security.xsd">
+    <!--重要重要重要：所有的路径必须以/打头-->
+    <!--静态资源过滤, 不需要登陆就可以访问-->
+    <!--pattern 匹配的规则 security=none 无须认证-->
+    <security:http pattern="/css/**" security="none"/>
+    <security:http pattern="/js/**" security="none"/>
+    <security:http pattern="/login.html" security="none"/>
+    <context:component-scan base-package="healthy.Controller"/>
+    <mvc:annotation-driven/>
+    <security:global-method-security pre-post-annotations="enabled" />
+    <!--<security:http pattern="/regist.html" security="none"></security:http>-->
+    <security:http auto-config="true" use-expressions="false">
+        <!--配置拦截的路径 pattern属性: 拦截的路径规则; access属性:需要什么角色才能访问-->
+        <security:intercept-url pattern="/**" access="ROLE_ADMIN"/>
+        <!--只要认证通过就可以访问-->
+        <!--登陆的配置信息
+            login-page: 登陆页面在哪 url
+            username-parameter: 登陆时提交的用户名的参数名称， security通过request.getParameter( username-parameter)
+            password-parameter: 同username-parameter
+            default-target-url: 登陆成功后默认跳转的url， 登陆成功后会跳转原来的页面，如果原来的页面是login.html就会跳转默认页面
+            always-use-default-target: true，不管原来是哪个页面过来登陆的，都跳转到默认页面，一般为false
+            authentication-failure-url: 登陆失败跳转的页面
+            authentication-success-forward-url: 一般不用，登陆成功后请求转发的url，一旦配置了这个，则default-target-url效
+            login-processing-url: 处理登陆认证的url
+        -->
+        <security:form-login
+                login-page="/login.html"
+                login-processing-url="/login.do"
+                username-parameter="username"
+                password-parameter="password"
+                default-target-url="/index.html"
+                always-use-default-target="false"
+                authentication-failure-url="/fail.html"
+        />
+        <!--修改spring-security.xml文件，关闭CsrfFilter过滤器-->
+        <security:csrf disabled="true"/>
+        <!--配置退出登录
+            logout-url:配置退出登录的路径; logout-success-url:配置成功退出登录后,跳转的页面;
+            invalidate-session:退出登录时销毁session
+        -->
+        <!--<security:logout logout-url="/logout" logout-success-url="/login.html" invalidate-session="true"/>-->
+    </security:http>
+
+    <security:authentication-manager>
+        <security:authentication-provider user-service-ref="securityUserService">
+            <security:password-encoder ref="encoder"/>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+    <bean id="securityUserService" class="healthy.security.SecurityUserServicelmp"/>
+    <bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+    <mvc:default-servlet-handler/>
+
+
+</beans>
